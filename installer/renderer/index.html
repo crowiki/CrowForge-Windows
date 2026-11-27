@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>CrowForge</title>
+ <style>
+ :root {
+ --bg-deep: #0B0B12;
+ --bg-surface: #13131d;
+ --bg-card: #1F1F2B;
+ --bg-card-hover: #1a2332;
+ --border: rgba(255,255,255,0.06);
+ --border-accent: rgba(144,87,255,0.3);
+ --text-primary: #f0f4f8;
+ --text-secondary: #8899aa;
+ --text-muted: #a29bb8;
+ --accent: #9962ff;
+ --accent-glow: rgba(144,87,255,0.15);
+ --accent-hover: #7C3AED;
+ --danger: #f87171;
+ --warning: #fbbf24;
+ --info: #60a5fa;
+ --gradient-hero: linear-gradient(135deg, #9962ff 0%, #7C3AED 50%, #00E5FF 100%);
+ --shadow-card: 0 4px 24px rgba(0,0,0,0.4);
+ --shadow-glow: 0 0 30px rgba(144,87,255,0.08);
+ --radius: 16px;
+ --radius-sm: 10px;
+ --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+ }
+ * { margin: 0; padding: 0; box-sizing: border-box; }
+ body {
+ font-family: 'Inter', system-ui, -apple-system, sans-serif;
+ background: var(--bg-deep);
+ color: var(--text-primary);
+ min-height: 100vh;
+ display: flex;
+ flex-direction: column;
+ overflow-x: hidden;
+ }
+ /* Background ambient glow */
+ body::before {
+ content: '';
+ position: fixed;
+ top: -200px; left: 50%; transform: translateX(-50%);
+ width: 600px; height: 600px;
+ background: radial-gradient(circle, rgba(144,87,255,0.06) 0%, transparent 70%);
+ pointer-events: none; z-index: 0;
+ }
+
+ .header {
+ background: rgba(17,15,29,0.85);
+ backdrop-filter: blur(20px);
+ border-bottom: 1px solid var(--border);
+ padding: 18px 28px;
+ display: flex; align-items: center; gap: 14px;
+ position: sticky; top: 0; z-index: 10;
+ }
+ .header-logo {
+ width: 36px; height: 36px;
+ background: var(--gradient-hero);
+ border-radius: 10px;
+ display: flex; align-items: center; justify-content: center;
+ font-size: 18px; font-weight: 700; color: #fff;
+ box-shadow: 0 0 20px rgba(144,87,255,0.2);
+ }
+ .header h1 { font-size: 16px; font-weight: 600; letter-spacing: -0.02em; }
+ .header .version {
+ color: var(--text-muted); font-size: 11px; margin-left: auto;
+ background: rgba(255,255,255,0.04); padding: 4px 10px; border-radius: 20px;
+ }
+
+ .main { flex: 1; padding: 32px 24px; max-width: 680px; margin: 0 auto; width: 100%; position: relative; z-index: 1; }
+
+ /* Step indicator */
+ .step-indicator { display: flex; gap: 6px; margin-bottom: 28px; }
+ .step-dot {
+ flex: 1; height: 3px; border-radius: 2px;
+ background: rgba(255,255,255,0.06); transition: var(--transition);
+ }
+ .step-dot.active { background: var(--accent); box-shadow: 0 0 12px var(--accent-glow); }
+ .step-dot.completed { background: var(--accent); opacity: 0.35; }
+
+ /* Cards */
+ .card {
+ background: var(--bg-card);
+ border: 1px solid var(--border);
+ border-radius: var(--radius);
+ padding: 28px;
+ margin-bottom: 16px;
+ box-shadow: var(--shadow-card);
+ animation: fadeUp 0.4s ease-out;
+ }
+ @keyframes fadeUp {
+ from { opacity: 0; transform: translateY(12px); }
+ to { opacity: 1; transform: translateY(0); }
+ }
+ .card h2 {
+ font-size: 18px; font-weight: 600; margin-bottom: 20px;
+ display: flex; align-items: center; gap: 10px;
+ letter-spacing: -0.01em;
+ }
+ .card h2 .icon {
+ width: 32px; height: 32px; border-radius: 8px;
+ display: flex; align-items: center; justify-content: center;
+ font-size: 16px;
+ background: var(--accent-glow); border: 1px solid var(--border-accent);
+ }
+
+ /* Form elements */
+ label { display: block; font-size: 12px; font-weight: 500; color: var(--text-secondary); margin-bottom: 6px; margin-top: 14px; text-transform: uppercase; letter-spacing: 0.05em; }
+ label:first-of-type { margin-top: 0; }
+ input[type="text"], input[type="password"] {
+ width: 100%; padding: 12px 16px;
+ background: var(--bg-surface); border: 1px solid var(--border);
+ border-radius: var(--radius-sm); color: var(--text-primary);
+ font-size: 14px; font-family: inherit; outline: none;
+ transition: var(--transition);
+ }
+ input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+ input::placeholder { color: var(--text-muted); }
+
+ .toggle-row { display: flex; align-items: center; gap: 8px; margin-top: 10px; cursor: pointer; }
+ .toggle-row input[type="checkbox"] { accent-color: var(--accent); width: 16px; height: 16px; cursor: pointer; }
+ .toggle-row span { font-size: 13px; color: var(--text-secondary); user-select: none; }
+
+ /* Buttons */
+ .btn {
+ padding: 11px 22px; border: none; border-radius: var(--radius-sm);
+ font-size: 13px; font-weight: 600; font-family: inherit;
+ cursor: pointer; transition: var(--transition);
+ display: inline-flex; align-items: center; gap: 8px;
+ letter-spacing: 0.01em;
+ }
+ .btn-primary {
+ background: var(--accent); color: #0B0B12;
+ box-shadow: 0 2px 12px var(--accent-glow);
+ }
+ .btn-primary:hover { background: var(--accent-hover); transform: translateY(-1px); box-shadow: 0 4px 20px var(--accent-glow); }
+ .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+ .btn-secondary {
+ background: rgba(255,255,255,0.04); color: var(--text-secondary);
+ border: 1px solid var(--border);
+ }
+ .btn-secondary:hover { background: rgba(255,255,255,0.08); color: var(--text-primary); border-color: rgba(255,255,255,0.12); }
+ .btn-danger { background: rgba(248,113,113,0.12); color: var(--danger); border: 1px solid rgba(248,113,113,0.2); }
+ .btn-danger:hover { background: rgba(248,113,113,0.2); }
+ .actions { display: flex; gap: 10px; margin-top: 24px; justify-content: flex-end; }
+
+ /* Status items */
+ .status-item {
+ display: flex; align-items: center; gap: 12px;
+ padding: 12px 0; border-bottom: 1px solid var(--border);
+ font-size: 14px; font-weight: 400;
+ }
+ .status-item:last-child { border-bottom: none; }
+ .status-icon { font-size: 16px; width: 24px; text-align: center; flex-shrink: 0; }
+ .status-ok { color: var(--accent); }
+ .status-warn { color: var(--warning); }
+ .status-error { color: var(--danger); }
+ .status-loading { color: var(--info); animation: spin 1s linear infinite; }
+ @keyframes spin { to { transform: rotate(360deg); } }
+
+ /* Module grid */
+ .module-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 14px; }
+ .module-item {
+ display: flex; align-items: center; gap: 10px;
+ padding: 12px 14px; background: var(--bg-surface);
+ border-radius: var(--radius-sm); font-size: 13px; font-weight: 500;
+ cursor: pointer; border: 1px solid var(--border);
+ transition: var(--transition); user-select: none;
+ }
+ .module-item:hover { border-color: var(--border-accent); background: var(--bg-card-hover); }
+ .module-item:has(input:checked) { border-color: var(--accent); background: var(--accent-glow); }
+ .module-item input { accent-color: var(--accent); width: 16px; height: 16px; cursor: pointer; }
+
+ /* Alerts */
+ .alert {
+ padding: 14px 18px; border-radius: var(--radius-sm);
+ font-size: 13px; margin-top: 14px; line-height: 1.6;
+ border: 1px solid;
+ }
+ .alert-info { background: rgba(96,165,250,0.08); border-color: rgba(96,165,250,0.15); color: #93c5fd; }
+ .alert-warning { background: rgba(251,191,36,0.08); border-color: rgba(251,191,36,0.15); color: #fde68a; }
+ .alert-error { background: rgba(248,113,113,0.08); border-color: rgba(248,113,113,0.15); color: #fca5a5; }
+ .alert-success { background: rgba(144,87,255,0.08); border-color: rgba(144,87,255,0.15); color: #86efac; }
+ .alert a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
+
+ /* Log output */
+ .log-output {
+ background: #080b12; border: 1px solid var(--border);
+ border-radius: var(--radius-sm); padding: 14px 16px;
+ font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+ font-size: 11px; color: #9962ff; line-height: 1.7;
+ max-height: 200px; overflow-y: auto; margin-top: 14px;
+ white-space: pre-wrap; word-break: break-all;
+ }
+ .log-output::-webkit-scrollbar { width: 6px; }
+ .log-output::-webkit-scrollbar-track { background: transparent; }
+ .log-output::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
+
+ .hidden { display: none !important; }
+ .big-btn {
+ width: 100%; padding: 16px; font-size: 15px;
+ justify-content: center; margin-top: 10px;
+ border-radius: var(--radius-sm);
+ }
+
+ .footer {
+ padding: 14px 24px; text-align: center;
+ font-size: 11px; color: var(--text-muted);
+ border-top: 1px solid var(--border);
+ background: rgba(17,15,29,0.5);
+ }
+
+ /* Custom scrollbar */
+ ::-webkit-scrollbar { width: 6px; }
+ ::-webkit-scrollbar-track { background: transparent; }
+ ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 3px; }
+  .header h1 span {color:#ad79ff} .header h1 {letter-spacing:-.045em;font-weight:800;font-style:italic} .actions {flex-wrap:wrap} :focus-visible{outline:2px solid #00e5ff;outline-offset:3px} .module-grid {grid-template-columns:repeat(auto-fit,minmax(160px,1fr))} @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+ </style>
+</head>
+<body>
+ <div class="header">
+ <img src="crowforge.svg" width="62" height="62" alt="">
+ <h1>Crow<span>Forge</span></h1>
+
+ </div>
+
+ <div class="main">
+ <div class="step-indicator" id="stepIndicator"></div>
+
+ <!-- STEP 1: Ambiente -->
+ <div id="step1" class="card">
+ <h2><span class="icon">🔍</span> Verificação do Ambiente</h2>
+ <div id="envStatus">
+ <div class="status-item"><span class="status-icon status-loading">⏳</span> Verificando ambiente...</div>
+ </div>
+ <div class="actions">
+ <button class="btn btn-secondary" id="btnCheckEnv" onclick="checkEnvironment()">Verificar Novamente</button>
+ <button class="btn btn-primary hidden" id="btnToStep2" onclick="goToStep(2)">Próximo →</button>
+ </div>
+ </div>
+
+ <!-- STEP 2: Credenciais -->
+ <div id="step2" class="card hidden">
+ <h2><span class="icon">🔑</span> Credenciais do Discord</h2>
+ <label for="clientId">Application ID</label>
+ <input type="text" id="clientId" placeholder="Ex: 123456789012345678">
+ <label for="token">Token do Bot</label>
+ <input type="password" id="token" placeholder="Cole o token do bot aqui">
+ <div class="toggle-row" onclick="document.getElementById('showToken').click()">
+ <input type="checkbox" id="showToken" onchange="toggleTokenVisibility()" onclick="event.stopPropagation()">
+ <span>Mostrar token</span>
+ </div>
+ <div id="credResult"></div>
+ <div class="actions">
+ <button class="btn btn-secondary" onclick="goToStep(1)">← Voltar</button>
+ <button class="btn btn-primary" id="btnValidateCred" onclick="validateCredentials()">Validar Credenciais</button>
+ <button class="btn btn-primary hidden" id="btnToStep3" onclick="goToStep(3)">Próximo →</button>
+ </div>
+ </div>
+
+ <!-- STEP 3: Módulos e Convite -->
+ <div id="step3" class="card hidden">
+ <h2><span class="icon">📦</span> Módulos e Convite</h2>
+ <p style="font-size:13px;color:var(--text-secondary);margin-bottom:14px;line-height:1.5">Selecione os módulos que deseja ativar. As permissões serão calculadas automaticamente.</p>
+ <div class="module-grid" id="moduleGrid"></div>
+ <div id="intentBox" class="alert alert-info" style="margin-top:18px">
+ <strong>Permissões especiais do Discord</strong>
+ <p id="intentStatus" role="status"></p>
+ <a href="#" onclick="openDevPortal();return false">Abrir Discord Developer Portal</a>
+ <label id="manualIntent" class="hidden"><input type="checkbox" id="confirmedIntents"> Confirmei essas opções na aba Bot do Portal.</label>
+ </div>
+ <label for="guildId">ID do servidor Discord</label>
+ <input type="text" id="guildId" inputmode="numeric" aria-describedby="guildHelp">
+ <p id="guildHelp">Ative o Modo desenvolvedor em Configurações de usuário → Avançado. Clique com o botão direito no servidor e escolha Copiar ID do servidor.</p>
+ <div class="actions">
+ <button class="btn btn-secondary" onclick="goToStep(2)">← Voltar</button>
+ <button class="btn btn-primary" onclick="generateAndOpenInvite()">🌐 Gerar Link e Convidar</button>
+ <button class="btn btn-primary" id="btnToStep4" onclick="verifyAndGoToStep4()">Já convidei →</button>
+ </div>
+ </div>
+
+ <!-- STEP 4: Instalação -->
+ <div id="step4" class="card hidden">
+ <h2><span class="icon">⚙️</span> Instalação</h2>
+ <div id="installStatus"></div>
+ <div class="log-output hidden" id="installLog"></div>
+ <div class="actions">
+ <button class="btn btn-secondary" onclick="goToStep(3)">← Voltar</button>
+ <button class="btn btn-primary" id="btnInstall" onclick="runInstallation()">Instalar CrowForge</button>
+ <button class="btn btn-primary hidden" id="btnToStep5" onclick="goToStep(5)">Próximo →</button>
+ </div>
+ </div>
+
+ <!-- STEP 5: Finalização -->
+ <div id="step5" class="card hidden">
+ <h2>Gerenciar bot</h2>
+ <p id="savedBot"></p>
+ <p id="membership" role="status"></p>
+ <div class="actions">
+ <button id="reinvite" class="btn btn-primary hidden" onclick="reinviteBot()">Convidar novamente</button>
+ <button class="btn btn-secondary" onclick="refreshMembership()">Verificar servidor</button>
+ </div>
+ <button class="btn btn-primary big-btn" id="startSaved" onclick="startBot()">▶ Iniciar CrowForge</button>
+ <button class="btn btn-secondary big-btn" onclick="openPanel()">🖥 Abrir Painel Administrativo</button>
+ <button class="btn btn-secondary big-btn" onclick="repairInstallation()">🔧 Reparar Instalação</button>
+ <p id="gatewayStatus" role="status"></p>
+ <div id="botRunningStatus" class="hidden" style="margin-top:16px"></div>
+ <div class="actions">
+ <button class="btn btn-danger hidden" id="btnStopBot" onclick="stopBot()">⏹ Parar Bot</button>
+ </div>
+ <div class="actions">
+ <button class="btn btn-secondary" id="addBot" onclick="manageProfile('switch')">Adicionar / trocar bot</button>
+ <button class="btn btn-secondary" id="logoutBot" onclick="manageProfile('logout')">Deslogar bot</button>
+ <button class="btn btn-danger" onclick="manageProfile('remove')">Remover bot deste computador</button>
+ </div>
+ </div>
+ </div>
+
+ <div class="footer">
+ CrowForge © 2026 — Token armazenado apenas localmente no seu computador.
+ </div>
+
+ <script>
+ const STEPS = ['Ambiente', 'Credenciais', 'Módulos', 'Instalação', 'Concluído'];
+ let currentStep = 1;
+ let validatedCredentials = null;
+ let profileState=null;
+ let membershipRequest=0;
+ let enabledModules = ['tickets', 'moderation', 'automod', 'welcome', 'levels', 'giveaways'];
+ const MODULE_NAMES = Object.fromEntries(Object.entries(window.crowbot.catalog || {}).map(([name,mod])=>[name,mod.label]));
+
+ function updateStepIndicator() {
+ const container = document.getElementById('stepIndicator');
+ container.innerHTML = STEPS.map((_, i) => {
+ const n = i + 1;
+ let cls = 'step-dot';
+ if (n < currentStep) cls += ' completed';
+ if (n === currentStep) cls += ' active';
+ return `<div class="${cls}" title="${STEPS[i]}"></div>`;
+ }).join('');
+ }
+
+ function goToStep(n) {
+ document.querySelectorAll('.card').forEach(c => c.classList.add('hidden'));
+ document.getElementById(`step${n}`).classList.remove('hidden');
+ currentStep = n;
+ updateStepIndicator();
+ if (n === 5) showProfile().catch(()=>{document.getElementById('membership').textContent='Falha ao ler o perfil do bot.';});
+ if (n === 1) checkEnvironment();
+ if (n === 3) { renderModuleGrid(); refreshIntentHint(); }
+ }
+
+ async function checkEnvironment() {
+ const container = document.getElementById('envStatus');
+ container.innerHTML = '<div class="status-item"><span class="status-icon status-loading">⏳</span> Verificando ambiente...</div>';
+ document.getElementById('btnToStep2').classList.add('hidden');
+ const env = await window.crowbot.checkEnvironment();
+ let html = '', allOk = true;
+ if (env.nodejs.installed && env.nodejs.valid) html += statusRow('ok', `Node.js ${env.nodejs.version}`);
+ else if (env.nodejs.installed) { html += statusRow('error', `Node.js ${env.nodejs.version} — mínimo: 22.12`); allOk = false; }
+ else { html += statusRow('error', 'Node.js não encontrado. Instale em nodejs.org'); allOk = false; }
+ if (env.npm.installed) html += statusRow('ok', `npm ${env.npm.version}`);
+ else { html += statusRow('error', 'npm não encontrado.'); allOk = false; }
+ html += env.internet ? statusRow('ok', 'Conexão com Discord') : statusRow('warn', 'Sem conexão com Discord');
+ if (!env.internet) allOk = false;
+ html += env.writePermission ? statusRow('ok', 'Permissão de escrita') : statusRow('error', 'Sem permissão de escrita');
+ if (!env.writePermission) allOk = false;
+ html += env.projectExists ? statusRow('ok', 'Projeto CrowForge encontrado') : statusRow('error', 'Projeto não encontrado');
+ if (!env.projectExists) allOk = false;
+ container.innerHTML = html;
+ if (allOk) document.getElementById('btnToStep2').classList.remove('hidden');
+ }
+
+ function htmlText(value) {
+ const span=document.createElement('span');
+ span.textContent=String(value);
+ return span.innerHTML;
+ }
+ function statusRow(type, text) {
+ const icons = { loading: '…', ok: '✓', warn: '!', error: '✕' };
+ return `<div class="status-item"><span class="status-icon status-${type}">${icons[type]}</span> ${htmlText(text)}</div>`;
+ }
+
+ function toggleTokenVisibility() {
+ document.getElementById('token').type = document.getElementById('showToken').checked ? 'text' : 'password';
+ }
+
+ async function validateCredentials() {
+ const clientId = document.getElementById('clientId').value.trim();
+ const token = document.getElementById('token').value.trim();
+ const resultDiv = document.getElementById('credResult');
+ if (!clientId || !token) { resultDiv.innerHTML = '<div class="alert alert-error">Preencha o Application ID e o Token.</div>'; return; }
+ resultDiv.innerHTML = '<div class="alert alert-info">⏳ Validando credenciais...</div>';
+ document.getElementById('btnValidateCred').disabled = true;
+ validatedCredentials = null;
+ document.getElementById('btnToStep3').classList.add('hidden');
+ let result;
+ try {
+ result = await window.crowbot.validateCredentials(clientId, token);
+ } catch {
+ result = { valid: false, error: 'Falha ao validar as credenciais. Tente novamente.' };
+ }
+ document.getElementById('btnValidateCred').disabled = false;
+ if (result.valid) {
+ validatedCredentials = { clientId, token, botUser: result.botUser };
+ resultDiv.textContent = `✓ Bot validado: ${result.botUser.username}#${result.botUser.discriminator}`;
+ document.getElementById('btnToStep3').classList.remove('hidden');
+ } else {
+ resultDiv.textContent = `✕ ${result.error}`;
+ document.getElementById('btnToStep3').classList.add('hidden');
+ }
+ }
+
+ function renderModuleGrid() {
+ document.getElementById('moduleGrid').innerHTML = Object.entries(MODULE_NAMES).map(([key, name]) => `
+ <label class="module-item"><input type="checkbox" value="${key}" ${enabledModules.includes(key) ? 'checked' : ''} onchange="updateModules()"> ${name}</label>
+ `).join('');
+ }
+ const intentLabels = {content:'Message Content Intent',members:'Server Members Intent'};
+ function requiredIntents() {
+   return [...new Set(enabledModules.flatMap(key=>window.crowbot.catalog?.[key]?.intents || []))];
+ }
+ function refreshIntentHint() {
+   const needed=requiredIntents();
+   document.getElementById('intentBox').classList.toggle('hidden',!needed.length);
+   document.getElementById('manualIntent').classList.add('hidden');
+   document.getElementById('confirmedIntents').checked=false;
+   document.getElementById('intentStatus').textContent='Ao avançar, o CrowForge verifica: '+needed.map(key=>intentLabels[key]).join(' e ')+'.';
+ }
+ async function confirmRequiredIntents(token) {
+   const needed=requiredIntents();
+   if (!needed.length) return true;
+   const result=await window.crowbot.checkIntents(token);
+   const status=document.getElementById('intentStatus');
+   const manual=document.getElementById('manualIntent');
+   const box=document.getElementById('confirmedIntents');
+   if (!result.available) {
+     manual.classList.remove('hidden');
+     status.textContent='Consulta indisponível. Confira na aba Bot: '+needed.map(key=>intentLabels[key]).join(' e ')+'. Marque a confirmação e tente novamente.';
+     if (!box.checked) box.focus();
+     return box.checked;
+   }
+   manual.classList.add('hidden'); box.checked=false;
+   const missing=needed.filter(key=>!result[key]);
+   if (!missing.length) return true;
+   status.textContent='Ative '+missing.map(key=>intentLabels[key]).join(' e ')+' na aba Bot, salve e clique em Já convidei novamente.';
+   status.scrollIntoView({block:'center'});
+   return false;
+ }
+ function updateModules() { enabledModules = [...document.querySelectorAll('#moduleGrid input:checked')].map(i => i.value); refreshIntentHint(); }
+ async function generateAndOpenInvite() {
+ if (!validatedCredentials) return;
+ const result = await window.crowbot.generateInviteLink(validatedCredentials.clientId, enabledModules);
+ await window.crowbot.openInBrowser(result.url);
+ }
+ function openDevPortal() { window.crowbot.openInBrowser('https://discord.com/developers/applications'); }
+
+ // A04: Verificar se o bot está no servidor antes de prosseguir
+ async function verifyAndGoToStep4() {
+ if (!validatedCredentials) return;
+ const btn = document.getElementById('btnToStep4');
+ btn.disabled = true;
+ btn.textContent = '⏳ Verificando...';
+ try {
+ const guildId = document.getElementById('guildId').value.trim();
+ const selection=enabledModules, credentials=validatedCredentials;
+ const result = await window.crowbot.verifyBotInGuild({ clientId: validatedCredentials.clientId, token: validatedCredentials.token, guildId, modules: enabledModules });
+ if (result.found) {
+ if (!await confirmRequiredIntents(credentials.token) || selection!==enabledModules || credentials!==validatedCredentials || currentStep!==3 || guildId!==document.getElementById('guildId').value.trim()) return;
+ validatedCredentials.confirmedIntents=true;
+ validatedCredentials.guildId = guildId;
+ goToStep(4);
+ } else {
+ alert(result.error);
+ }
+ } catch {
+ alert('Falha na verificação. Confira a conexão e tente novamente.');
+ } finally {
+ btn.disabled = false;
+ btn.textContent = 'Já convidei →';
+ }
+ }
+
+ async function runInstallation() {
+ if (!validatedCredentials) return;
+ const statusDiv = document.getElementById('installStatus');
+ const logDiv = document.getElementById('installLog');
+ const btnInstall = document.getElementById('btnInstall');
+ btnInstall.disabled = true; logDiv.classList.remove('hidden'); logDiv.textContent = '';
+ const steps = [
+ { label: 'Salvando configuração...', fn: () => window.crowbot.writeEnvFile({ confirmedIntents: validatedCredentials.confirmedIntents, guildId: validatedCredentials.guildId, token: validatedCredentials.token, clientId: validatedCredentials.clientId, modules: enabledModules }) },
+ { label: 'Verificando dependências...', fn: () => window.crowbot.installDependencies() },
+ { label: 'Registrando comandos no Discord...', fn: () => window.crowbot.deployCommands() }
+ ];
+ steps.push({label:'Finalizando instalação...', fn: () => window.crowbot.saveInstallationState({
+   guildId:validatedCredentials.guildId, botUser:validatedCredentials.botUser,
+   clientId:validatedCredentials.clientId, modules:enabledModules
+ })});
+ const next = document.getElementById('btnToStep5');
+ next.classList.add('hidden');
+ let html = '';
+ try {
+   for (const step of steps) {
+     statusDiv.innerHTML = html + statusRow('loading', step.label);
+     logDiv.textContent += `> ${step.label}\n`;
+     let result;
+     try { result = await step.fn(); }
+     catch { result = {success:false,error:'O aplicativo não concluiu esta etapa. Tente novamente.'}; }
+     if (result?.output) logDiv.textContent += result.output + '\n';
+     if (!result?.success) {
+       const message = result?.error || 'Erro desconhecido.';
+       statusDiv.innerHTML = html + statusRow('error', step.label + ' ' + message);
+       if (result?.needsInvite) statusDiv.innerHTML += '<button class="btn btn-secondary" onclick="goToStep(3)">Voltar ao convite</button>';
+       logDiv.textContent += message + '\n';
+       return;
+     }
+     html += statusRow('ok', step.label);
+     logDiv.scrollTop = logDiv.scrollHeight;
+   }
+   statusDiv.innerHTML = html + statusRow('ok', 'Instalação concluída!');
+   next.classList.remove('hidden');
+ } finally { btnInstall.disabled = false; }
+ }
+
+ async function startBot() {
+ const s = document.getElementById('botRunningStatus');
+ s.innerHTML = '<div class="alert alert-info">⏳ Iniciando bot...</div>'; s.classList.remove('hidden');
+ const r = await window.crowbot.startBot();
+ s.textContent = r.success ? r.message : r.error;
+ const status=await window.crowbot.getBotStatus();
+ document.getElementById('btnStopBot').classList.toggle('hidden',!status.active);
+ }
+ async function stopBot() {
+ await window.crowbot.stopBot();
+ document.getElementById('botRunningStatus').innerHTML = '<div class="alert alert-warning">⏹ Bot parado.</div>';
+ document.getElementById('btnStopBot').classList.add('hidden');
+ }
+ async function openPanel() { await window.crowbot.openPanel(); }
+ async function repairInstallation() {
+ const s = document.getElementById('botRunningStatus');
+ s.innerHTML = '<div class="alert alert-info">🔧 Reparando...</div>'; s.classList.remove('hidden');
+ const r = await window.crowbot.repairInstallation();
+ if (r.success) s.innerHTML = '<div class="alert alert-success">✓ Reparo concluído!</div>';
+ else s.textContent = r.results.filter(x=>x.error).map(x=>x.step+' — '+x.error).join('\n');
+ }
+
+ async function showProfile() {
+   profileState=await window.crowbot.getInstallationState();
+   if(currentStep!==5) return;
+   const state=profileState;
+   validatedCredentials=null;
+   document.getElementById('token').value='';
+   document.getElementById('savedBot').textContent=[state.botUser?.username || 'Bot configurado',state.guildId && 'Servidor '+state.guildId].filter(Boolean).join(' · ');
+   document.getElementById('logoutBot').disabled=!!state.signedOut;
+   await refreshMembership();
+ }
+ async function refreshMembership() {
+   const seq=++membershipRequest;
+   const message=document.getElementById('membership');
+   message.textContent='Verificando acesso ao servidor…';
+   const start=document.getElementById('startSaved');
+   start.disabled=true;
+   document.getElementById('reinvite').classList.add('hidden');
+   let result;
+   try {result=await window.crowbot.checkSavedMembership();} catch {result={status:'unknown'};}
+   if(seq!==membershipRequest || currentStep!==5) return;
+   const messages={member:'Bot presente no servidor: '+(result.name || ''), missing:'O bot perdeu acesso a este servidor. Convide-o novamente ou troque de bot.',invalid:'O Discord recusou o token salvo. Entre novamente em Adicionar / trocar bot.',unknown:'Não foi possível consultar o Discord. Verifique a conexão e tente novamente.',signedOut:'Sessão encerrada. Use Adicionar / trocar bot para entrar.'};
+   message.textContent=messages[result.status];
+   start.disabled=['missing','invalid','signedOut'].includes(result.status);
+   document.getElementById('reinvite').classList.toggle('hidden',result.status!=='missing');
+ }
+ async function reinviteBot() {
+   if(!profileState?.clientId) return;
+   const link=await window.crowbot.generateInviteLink(profileState.clientId,profileState.modules);
+   const url=new URL(link.url);
+   if(profileState.guildId) url.searchParams.set('guild_id',profileState.guildId);
+   await window.crowbot.openInBrowser(url.href);
+ }
+ async function manageProfile(action) {
+   if (!(action==='switch' && profileState?.signedOut)) {
+     const result=await window.crowbot.changeBotProfile(action);
+     if(!result.success) {
+       if(!result.cancelled) document.getElementById('membership').textContent=result.error || 'Falha ao alterar o bot.';
+       return;
+     }
+   }
+   membershipRequest++;
+   validatedCredentials=null;
+   document.getElementById('token').value='';
+   document.getElementById('clientId').value='';
+   document.getElementById('guildId').value='';
+   document.getElementById('credResult').textContent='';
+   document.getElementById('btnToStep3').classList.add('hidden');
+   document.getElementById('botRunningStatus').textContent='';
+   enabledModules=['tickets','moderation','automod','welcome','levels','giveaways'];
+   if(action==='logout') await showProfile();
+   else goToStep(action==='remove'?1:2);
+ }
+ async function checkExistingInstallation() {
+   const state=await window.crowbot.getInstallationState();
+   if(!state.installed) return false;
+   goToStep(5);
+   return true;
+ }
+ window.crowbot.onManageBot?.(()=>goToStep(5));
+
+ setInterval(async()=>{
+ if(currentStep!==5) return;
+ const status=await window.crowbot.getBotStatus();
+ document.getElementById('btnStopBot').classList.toggle('hidden',!status.active);
+ document.getElementById('gatewayStatus').textContent=status.running?'Discord conectado':status.active?'Aguardando conexão ao Discord':'Bot parado';
+ },3000);
+ updateStepIndicator();
+ checkExistingInstallation().then(has => { if (!has) checkEnvironment(); });
+ </script>
+</body>
+</html>

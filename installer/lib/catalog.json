@@ -1,0 +1,164 @@
+{
+  "tickets": {
+    "label": "Tickets",
+    "permissions": [
+      16,
+      268435456
+    ],
+    "intents": []
+  },
+  "moderation": {
+    "label": "Moderação",
+    "permissions": [
+      8192,
+      1099511627776,
+      2,
+      4
+    ],
+    "intents": []
+  },
+  "levels": {
+    "label": "Níveis e XP",
+    "permissions": [],
+    "intents": [
+      "content"
+    ]
+  },
+  "giveaways": {
+    "label": "Sorteios",
+    "permissions": [
+      64,
+      8192
+    ],
+    "intents": []
+  },
+  "welcome": {
+    "label": "Boas-vindas",
+    "permissions": [],
+    "intents": [
+      "members"
+    ]
+  },
+  "automod": {
+    "label": "AutoMod",
+    "permissions": [
+      8192,
+      1099511627776
+    ],
+    "intents": [
+      "content"
+    ]
+  },
+  "antiraid": {
+    "label": "Anti-raid",
+    "permissions": [
+      2,
+      4,
+      1099511627776
+    ],
+    "intents": [
+      "members"
+    ]
+  },
+  "autoroles": {
+    "label": "Cargos automáticos",
+    "permissions": [
+      268435456
+    ],
+    "intents": [
+      "members"
+    ]
+  },
+  "verification": {
+    "label": "Verificação",
+    "permissions": [
+      268435456
+    ],
+    "intents": [
+      "members"
+    ]
+  },
+  "economy": {
+    "label": "Economia",
+    "permissions": [],
+    "intents": []
+  },
+  "polls": {
+    "label": "Enquetes",
+    "permissions": [],
+    "intents": []
+  },
+  "forms": {
+    "label": "Formulários",
+    "permissions": [],
+    "intents": []
+  },
+  "suggestions": {
+    "label": "Sugestões",
+    "permissions": [],
+    "intents": []
+  },
+  "embed-builder": {
+    "label": "Editor de embeds",
+    "permissions": [],
+    "intents": []
+  },
+  "custom-commands": {
+    "label": "Comandos personalizados",
+    "permissions": [],
+    "intents": []
+  },
+  "stats": {
+    "label": "Estatísticas",
+    "permissions": [],
+    "intents": []
+  },
+  "temp-voice": {
+    "label": "Salas de voz temporárias",
+    "permissions": [
+      16,
+      16777216,
+      268435456
+    ],
+    "intents": []
+  },
+  "reminders": {
+    "label": "Lembretes",
+    "permissions": [],
+    "intents": []
+  },
+  "modmail": {
+    "label": "ModMail",
+    "permissions": [
+      16,
+      268435456
+    ],
+    "intents": [
+      "content"
+    ]
+  },
+  "store": {
+    "label": "Loja",
+    "permissions": [
+      268435456
+    ],
+    "intents": []
+  },
+  "alerts": {
+    "label": "Alertas",
+    "permissions": [],
+    "intents": []
+  },
+  "white-label": {
+    "label": "Personalização de marca",
+    "permissions": [],
+    "intents": []
+  },
+  "setup": {
+    "label": "Setup & Ajuda",
+    "permissions": [
+      8
+    ],
+    "intents": []
+  }
+}

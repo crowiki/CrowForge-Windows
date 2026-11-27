@@ -1,0 +1,51 @@
+# Dependencies
+node_modules/
+
+# Environment
+.env
+.env.local
+
+# Data
+data/*.db
+data/*.json
+data/backups/
+
+# Build
+apps/dashboard/dist/
+apps/dashboard/.vite/
+
+# Logs
+logs/
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Test coverage
+coverage/
+
+# Temporary
+*.tmp
+*.pid
+# Perfis locais, credenciais e artefatos distribuídos separadamente
+.env.*
+!.env.example
+data/
+*.db
+*.sqlite*
+*.db-*
+*.pem
+*.key
+__pycache__/
+*.exe
+*.zip
+*.tar
+builds/
+entrega/

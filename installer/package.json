@@ -1,0 +1,52 @@
+{
+  "name": "crowbot-installer",
+  "version": "1.1.0",
+  "description": "Aplicativo CrowForge para Discord",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "python ../scripts/build_windows.py",
+    "test": "node --test ../tests/integration/installer.test.js ../tests/unit/instalacao-seguranca.test.js"
+  },
+  "devDependencies": {
+    "electron": "45.5.0",
+    "electron-builder": "26.18.0"
+  },
+  "build": {
+    "appId": "com.crowbot.installer",
+    "productName": "CrowForge",
+    "win": {
+      "target": "nsis",
+      "signAndEditExecutable": true,
+      "icon": "icon.ico"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "renderer/**/*",
+      "lib/**/*",
+      "icon.ico"
+    ],
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowElevation": false,
+      "runAfterFinish": false,
+      "installerIcon": "icon.ico",
+      "uninstallerIcon": "icon.ico",
+      "artifactName": "Instalar CrowForge.exe",
+      "uninstallDisplayName": "CrowForge",
+      "shortcutName": "CrowForge",
+      "include": "crowforge.nsh"
+    },
+    "extraResources": [
+      {
+        "from": "build/runtime",
+        "to": "runtime"
+      }
+    ]
+  },
+  "overrides": {
+    "minimatch@>=7 <11.0.1": "11.0.1"
+  }
+}
